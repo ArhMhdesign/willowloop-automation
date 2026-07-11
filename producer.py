@@ -1,7 +1,8 @@
 """
 WillowLoop producer.py
-Downloads a nature video clip from Pixabay/Pexels,
-loops it to 2 hours via FFmpeg concat+copy,
+Downloads a nature video clip from Pixabay/Pexels (min 2 min),
+loops it to 1 hour via FFmpeg concat+copy,
+adds beautiful ambient background music from Pixabay,
 and cuts a 59-second Short.
 """
 import os
@@ -15,9 +16,12 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 PIXABAY_KEY = os.environ.get("PIXABAY_KEY", "")
-PEXELS_KEY = os.environ.get("PEXELS_KEY", "")
-WORK_DIR = "/tmp/willowloop"
+PEXELS_KEY  = os.environ.get("PEXELS_KEY", "")
+WORK_DIR    = "/tmp/willowloop"
 
+LOOP_DURATION    = 3600   # 1 hour (YouTube-safe for new channels)
+MIN_CLIP_SECONDS = 120    # require clips >= 2 min so loops aren't boring
+SHORT_DURATION   = 59     # YouTube Shorts limit
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -25,21 +29,12 @@ def ensure_dir(path):
     os.makedirs(path, exist_ok=True)
     return path
 
-
 def get_duration(path):
-    """Return duration in seconds using ffprobe."""
-    cmd = [
-        "ffprobe", "-v", "quiet",
-        "-print_format", "json",
-        "-show_format", path,
-    ]
+    cmd = ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", path]
     result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-    data = json.loads(result.stdout)
-    return float(data["format"]["duration"])
-
+    return float(json.loads(result.stdout)["format"]["duration"])
 
 def download_file(url, dest, label="file"):
-    """Stream-download a file. Returns True on success."""
     logger.info(f"Downloading {label} ...")
     headers = {}
     if "pexels.com" in url and PEXELS_KEY:
@@ -53,19 +48,17 @@ def download_file(url, dest, label="file"):
                     if chunk:
                         f.write(chunk)
                         size += len(chunk)
-        logger.info(f"  -> {size / 1024 / 1024:.1f} MB saved to {dest}")
-        return True
+            logger.info(f"  -> {size / 1024 / 1024:.1f} MB saved to {dest}")
+            return True
     except Exception as e:
         logger.warning(f"Download failed ({label}): {e}")
         if os.path.exists(dest):
             os.remove(dest)
         return False
 
-
 # ─── Video search ─────────────────────────────────────────────────────────────
 
-def search_pixabay_video(queries, min_duration=20, min_width=1280):
-    """Return list of Pixabay video hits sorted by duration desc."""
+def search_pixabay_video(queries, min_duration=MIN_CLIP_SECONDS, min_width=1280):
     results = []
     seen = set()
     for query in queries:
@@ -73,12 +66,9 @@ def search_pixabay_video(queries, min_duration=20, min_width=1280):
             r = requests.get(
                 "https://pixabay.com/api/videos/",
                 params={
-                    "key": PIXABAY_KEY,
-                    "q": query,
-                    "video_type": "film",
-                    "per_page": 20,
-                    "safesearch": "true",
-                    "min_width": min_width,
+                    "key": PIXABAY_KEY, "q": query,
+                    "video_type": "film", "per_page": 20,
+                    "safesearch": "true", "min_width": min_width,
                 },
                 timeout=30,
             )
@@ -103,13 +93,11 @@ def search_pixabay_video(queries, min_duration=20, min_width=1280):
                                  "width": width, "source": "pixabay"})
                 seen.add(hit["id"])
         except Exception as e:
-            logger.warning(f"Pixabay search '{query}': {e}")
+            logger.warning(f"Pixabay video search '{query}': {e}")
     results.sort(key=lambda x: x["duration"], reverse=True)
     return results
 
-
-def search_pexels_video(queries, min_duration=20):
-    """Fallback: search Pexels for video clips."""
+def search_pexels_video(queries, min_duration=MIN_CLIP_SECONDS):
     if not PEXELS_KEY:
         return []
     results = []
@@ -143,22 +131,63 @@ def search_pexels_video(queries, min_duration=20):
     results.sort(key=lambda x: x["duration"], reverse=True)
     return results
 
+# ─── Music search ─────────────────────────────────────────────────────────────
+
+def search_pixabay_music(queries, min_duration=60):
+    """Search Pixabay audio API for ambient music tracks."""
+    results = []
+    seen = set()
+    for query in queries:
+        try:
+            r = requests.get(
+                "https://pixabay.com/api/",
+                params={
+                    "key": PIXABAY_KEY,
+                    "q": query,
+                    "media_type": "music",
+                    "per_page": 10,
+                },
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
+            logger.info(f"Music search '{query}': {data.get('totalHits', 0)} results")
+            for hit in data.get("hits", []):
+                hit_id = hit.get("id")
+                if hit_id in seen:
+                    continue
+                dur = hit.get("duration", 0)
+                if dur < min_duration:
+                    continue
+                # Pixabay music API: audio URL in various fields
+                audio_url = (
+                    hit.get("audio", {}).get("url") if isinstance(hit.get("audio"), dict)
+                    else hit.get("audio")
+                    or hit.get("audioURL")
+                    or hit.get("audio_url")
+                )
+                if not audio_url:
+                    continue
+                # Only accept direct audio file URLs
+                if not any(audio_url.lower().endswith(ext) for ext in (".mp3", ".ogg", ".wav", ".m4a", ".flac")):
+                    continue
+                results.append({"url": audio_url, "duration": dur, "id": hit_id})
+                seen.add(hit_id)
+        except Exception as e:
+            logger.warning(f"Pixabay music search '{query}': {e}")
+    results.sort(key=lambda x: x["duration"], reverse=True)
+    logger.info(f"Music tracks found: {len(results)}")
+    return results
 
 # ─── FFmpeg helpers ───────────────────────────────────────────────────────────
 
 def _run_ffmpeg(cmd):
-    """Run an ffmpeg command; raise on failure with last 800 chars of stderr."""
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"FFmpeg failed:\n{result.stderr[-800:]}")
     return result
 
-
 def normalize_clip(src, dest):
-    """
-    Re-encode the source clip to a clean h264/aac baseline so concat-copy works
-    reliably. Keeps 720p max, ultrafast preset = very fast.
-    """
     logger.info("Normalizing clip for clean looping ...")
     _run_ffmpeg([
         "ffmpeg", "-y", "-i", src,
@@ -170,21 +199,14 @@ def normalize_clip(src, dest):
     ])
     logger.info(f"Normalized clip: {dest}")
 
-
-def create_loop_video(clip_path, output_path, duration=7200):
-    """
-    Concat-copy the clip N times to fill `duration` seconds.
-    Uses -c:v copy + -c:a copy for speed (no re-encode).
-    """
+def create_loop_video(clip_path, output_path, duration=LOOP_DURATION):
     clip_dur = get_duration(clip_path)
     n_reps = math.ceil(duration / clip_dur) + 3
-
     concat_file = clip_path + ".concat.txt"
     abs_clip = os.path.abspath(clip_path)
     with open(concat_file, "w") as f:
         for _ in range(n_reps):
             f.write(f"file '{abs_clip}'\n")
-
     logger.info(f"Looping {clip_dur:.0f}s clip x{n_reps} -> {duration // 3600}h video ...")
     try:
         _run_ffmpeg([
@@ -195,7 +217,7 @@ def create_loop_video(clip_path, output_path, duration=7200):
             output_path,
         ])
     except RuntimeError:
-        logger.warning("Copy-mode failed, falling back to re-encode ...")
+        logger.warning("Copy-mode failed, re-encoding ...")
         _run_ffmpeg([
             "ffmpeg", "-y",
             "-f", "concat", "-safe", "0", "-i", concat_file,
@@ -207,15 +229,39 @@ def create_loop_video(clip_path, output_path, duration=7200):
     finally:
         if os.path.exists(concat_file):
             os.remove(concat_file)
-
     logger.info(f"Loop video ready: {output_path}")
 
+def mix_music(video_path, music_path, output_path,
+              music_vol=0.80, natural_vol=0.25):
+    """
+    Mix looping background music into the video.
+    Natural video audio stays at natural_vol, music at music_vol.
+    """
+    logger.info("Mixing background music ...")
+    try:
+        _run_ffmpeg([
+            "ffmpeg", "-y",
+            "-i", video_path,
+            "-stream_loop", "-1", "-i", music_path,
+            "-t", str(LOOP_DURATION),
+            "-filter_complex",
+            (f"[0:a]volume={natural_vol}[nat];"
+             f"[1:a]volume={music_vol}[mus];"
+             f"[nat][mus]amix=inputs=2:duration=first:dropout_transition=5[a]"),
+            "-map", "0:v",
+            "-map", "[a]",
+            "-c:v", "copy",
+            "-c:a", "aac", "-b:a", "192k",
+            output_path,
+        ])
+        logger.info(f"Music mixed successfully: {output_path}")
+        return True
+    except RuntimeError as e:
+        logger.warning(f"Music mixing failed: {e}")
+        return False
 
-def create_short(main_video_path, output_path, duration=59):
-    """
-    Cut the first `duration` seconds and crop to 9:16 vertical for YouTube Shorts.
-    Falls back to a plain cut if the crop fails.
-    """
+def create_short(main_video_path, output_path, duration=SHORT_DURATION):
+    """Cut first `duration` seconds and crop to 9:16 for YouTube Shorts."""
     logger.info(f"Creating {duration}s Short ...")
     try:
         _run_ffmpeg([
@@ -228,7 +274,7 @@ def create_short(main_video_path, output_path, duration=59):
             output_path,
         ])
     except RuntimeError:
-        logger.warning("Vertical crop failed; using plain cut for Short.")
+        logger.warning("Vertical crop failed; plain cut fallback.")
         _run_ffmpeg([
             "ffmpeg", "-y",
             "-i", main_video_path,
@@ -238,24 +284,29 @@ def create_short(main_video_path, output_path, duration=59):
         ])
     logger.info(f"Short ready: {output_path}")
 
-
 # ─── Main produce function ────────────────────────────────────────────────────
 
 def produce(topic):
     """
-    Download a clip, normalize it, loop to 2h, cut a Short.
+    Download a long clip (>=2 min), normalize, loop to 1h,
+    mix in ambient music, cut a 59s Short.
     Returns (main_video_path, short_path, metadata_dict).
     """
     ensure_dir(WORK_DIR)
-    slug = topic["slug"]
+    slug  = topic["slug"]
     today = datetime.now(timezone.utc).strftime("%Y%m%d")
 
-    # 1. Find video clips
-    logger.info(f"[{topic['name']}] Searching Pixabay ...")
+    # 1. Find video clips (prefer long clips >= 2 min, fallback to >= 30s)
+    logger.info(f"[{topic['name']}] Searching Pixabay for video ...")
     clips = search_pixabay_video(topic["video_queries"])
+    if not clips:
+        logger.info("No long clips found; retrying with min 30s ...")
+        clips = search_pixabay_video(topic["video_queries"], min_duration=30)
     if not clips:
         logger.info("Pixabay empty -> trying Pexels ...")
         clips = search_pexels_video(topic["video_queries"])
+    if not clips:
+        clips = search_pexels_video(topic["video_queries"], min_duration=30)
     if not clips:
         raise RuntimeError(f"No video clips found for topic: {topic['name']}")
 
@@ -275,30 +326,54 @@ def produce(topic):
     normalize_clip(raw_clip, norm_clip)
     os.remove(raw_clip)
 
-    # 4. Create 2-hour loop
-    main_path = os.path.join(WORK_DIR, f"{slug}_main_{today}.mp4")
-    create_loop_video(norm_clip, main_path, topic["duration"])
+    # 4. Create 1-hour loop
+    loop_path = os.path.join(WORK_DIR, f"{slug}_loop_{today}.mp4")
+    create_loop_video(norm_clip, loop_path, LOOP_DURATION)
     os.remove(norm_clip)
 
-    # 5. Create Short
-    short_path = os.path.join(WORK_DIR, f"{slug}_short_{today}.mp4")
-    create_short(main_path, short_path, duration=59)
+    # 5. Download background music and mix in
+    main_path  = os.path.join(WORK_DIR, f"{slug}_main_{today}.mp4")
+    music_path = os.path.join(WORK_DIR, f"{slug}_music_{today}.mp3")
+    music_added = False
 
-    # 6. Build metadata
+    music_queries = topic.get("music_queries", [f"{topic['name']} ambient relaxing"])
+    music_tracks  = search_pixabay_music(music_queries)
+    if music_tracks:
+        for mt in music_tracks[:3]:
+            logger.info(f"Trying music track {mt['id']} ({mt['duration']}s) ...")
+            if download_file(mt["url"], music_path, "music track"):
+                if mix_music(loop_path, music_path, main_path):
+                    music_added = True
+                    break
+        if os.path.exists(music_path):
+            os.remove(music_path)
+
+    if not music_added:
+        logger.info("No music mixed — keeping natural audio.")
+        os.rename(loop_path, main_path)
+    else:
+        if os.path.exists(loop_path):
+            os.remove(loop_path)
+
+    # 6. Create Short from final video (includes music)
+    short_path = os.path.join(WORK_DIR, f"{slug}_short_{today}.mp4")
+    create_short(main_path, short_path, duration=SHORT_DURATION)
+
+    # 7. Build metadata
     metadata = {
         "main": {
-            "title": topic["title"],
+            "title":       topic["title"],
             "description": topic["description"],
-            "tags": topic["tags"],
+            "tags":        topic["tags"],
             "category_id": topic["category_id"],
-            "privacy": "public",
+            "privacy":     "public",
         },
         "short": {
-            "title": topic["short_title"],
+            "title":       topic["short_title"],
             "description": topic["short_description"],
-            "tags": topic["tags"],
+            "tags":        topic["tags"],
             "category_id": topic["category_id"],
-            "privacy": "public",
+            "privacy":     "public",
         },
     }
     return main_path, short_path, metadata
