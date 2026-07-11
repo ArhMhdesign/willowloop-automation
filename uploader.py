@@ -5,17 +5,15 @@ Authenticates with YouTube via OAuth2 refresh token and uploads videos.
 import os
 import time
 import logging
+from pathlib import Path
 
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
 logger = logging.getLogger(__name__)
-
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
-API_SERVICE_NAME = "youtube"
-API_VERSION = "v3"
 
 MAX_RETRIES = 5
 RETRIABLE_STATUS_CODES = {500, 502, 503, 504}
@@ -23,19 +21,15 @@ RETRIABLE_STATUS_CODES = {500, 502, 503, 504}
 
 def get_youtube_service():
     """Build YouTube API client using env-var credentials."""
-    client_id = os.environ["YOUTUBE_CLIENT_ID"]
-    client_secret = os.environ["YOUTUBE_CLIENT_SECRET"]
-    refresh_token = os.environ["YOUTUBE_REFRESH_TOKEN"]
-
     creds = Credentials(
         token=None,
-        refresh_token=refresh_token,
-        token_uri="https://oauth2.googleapis.com/token",
-        client_id=client_id,
-        client_secret=client_secret,
-        scopes=SCOPES,
+        refresh_token=os.environ['YT_REFRESH_TOKEN'],
+        client_id=os.environ['YT_CLIENT_ID'],
+        client_secret=os.environ['YT_CLIENT_SECRET'],
+        token_uri='https://oauth2.googleapis.com/token',
     )
-    return build(API_SERVICE_NAME, API_VERSION, credentials=creds)
+    creds.refresh(Request())
+    return build('youtube', 'v3', credentials=creds)
 
 
 def upload_video(youtube, file_path, meta, is_short=False):
@@ -46,7 +40,7 @@ def upload_video(youtube, file_path, meta, is_short=False):
     """
     title = meta["title"]
     if is_short and "#shorts" not in title.lower():
-        title = title + " #shorts"
+        title = title + " #Shorts"
 
     body = {
         "snippet": {
@@ -61,8 +55,8 @@ def upload_video(youtube, file_path, meta, is_short=False):
         },
     }
 
-    file_size_mb = os.path.getsize(file_path) / 1024 / 1024
-    logger.info(f"Uploading: {title} ({file_size_mb:.0f} MB)")
+    file_size_mb = Path(file_path).stat().st_size / 1024 / 1024
+    logger.info(f"Uploading: {title[:60]} ({file_size_mb:.0f} MB)")
 
     media = MediaFileUpload(
         file_path,
@@ -91,11 +85,11 @@ def upload_video(youtube, file_path, meta, is_short=False):
                 if retries > MAX_RETRIES:
                     raise RuntimeError(f"Upload failed after {MAX_RETRIES} retries: {e}")
                 wait = 2 ** retries
-                logger.warning(f"Retriable error {e.resp.status}; retrying in {wait}s ...")
+                logger.warning(f"Retriable error {e.resp.status}; retrying in {wait}s …")
                 time.sleep(wait)
             else:
                 raise
 
     video_id = response["id"]
-    logger.info(f"Upload complete -> https://youtu.be/{video_id}")
+    logger.info(f"Upload complete → https://youtu.be/{video_id}")
     return video_id
