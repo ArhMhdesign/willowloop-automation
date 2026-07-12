@@ -1,9 +1,9 @@
 """
 WillowLoop producer.py
 Downloads a nature video clip from Pixabay/Pexels (min 2 min),
-loops it to 1 hour via FFmpeg concat+copy,
-adds beautiful ambient background music from Pixabay,
-and cuts a 59-second Short.
+loops it to 30 minutes via FFmpeg concat+copy,
+adds beautiful ambient background music from Pixabay (music only — no natural audio),
+and cuts a 59-second Short (also with music only).
 """
 import os
 import json
@@ -19,7 +19,7 @@ PIXABAY_KEY = os.environ.get("PIXABAY_KEY", "")
 PEXELS_KEY  = os.environ.get("PEXELS_KEY", "")
 WORK_DIR    = "/tmp/willowloop"
 
-LOOP_DURATION    = 3600   # 1 hour (YouTube-safe for new channels)
+LOOP_DURATION    = 1800   # 30 minutes
 MIN_CLIP_SECONDS = 120    # require clips >= 2 min so loops aren't boring
 SHORT_DURATION   = 59     # YouTube Shorts limit
 
@@ -207,7 +207,7 @@ def create_loop_video(clip_path, output_path, duration=LOOP_DURATION):
     with open(concat_file, "w") as f:
         for _ in range(n_reps):
             f.write(f"file '{abs_clip}'\n")
-    logger.info(f"Looping {clip_dur:.0f}s clip x{n_reps} -> {duration // 3600}h video ...")
+    logger.info(f"Looping {clip_dur:.0f}s clip x{n_reps} -> {duration // 60}min video ...")
     try:
         _run_ffmpeg([
             "ffmpeg", "-y",
@@ -231,34 +231,46 @@ def create_loop_video(clip_path, output_path, duration=LOOP_DURATION):
             os.remove(concat_file)
     logger.info(f"Loop video ready: {output_path}")
 
-def mix_music(video_path, music_path, output_path,
-              music_vol=0.80, natural_vol=0.25):
+def apply_music_only(video_path, music_path, output_path, music_vol=1.0):
     """
-    Mix looping background music into the video.
-    Natural video audio stays at natural_vol, music at music_vol.
+    Replace ALL audio with looping background music.
+    Original video audio is completely discarded — music only.
     """
-    logger.info("Mixing background music ...")
+    logger.info("Adding music-only audio track ...")
     try:
         _run_ffmpeg([
             "ffmpeg", "-y",
             "-i", video_path,
             "-stream_loop", "-1", "-i", music_path,
             "-t", str(LOOP_DURATION),
-            "-filter_complex",
-            (f"[0:a]volume={natural_vol}[nat];"
-             f"[1:a]volume={music_vol}[mus];"
-             f"[nat][mus]amix=inputs=2:duration=first:dropout_transition=5[a]"),
+            "-filter_complex", f"[1:a]volume={music_vol}[mus]",
             "-map", "0:v",
-            "-map", "[a]",
+            "-map", "[mus]",
             "-c:v", "copy",
             "-c:a", "aac", "-b:a", "192k",
             output_path,
         ])
-        logger.info(f"Music mixed successfully: {output_path}")
+        logger.info(f"Music applied successfully: {output_path}")
         return True
     except RuntimeError as e:
-        logger.warning(f"Music mixing failed: {e}")
+        logger.warning(f"Music application failed: {e}")
         return False
+
+def add_silent_audio(video_path, output_path):
+    """Fallback: strip original audio and add silence (no natural sounds)."""
+    logger.info("Adding silent audio track (no natural audio) ...")
+    _run_ffmpeg([
+        "ffmpeg", "-y",
+        "-i", video_path,
+        "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
+        "-t", str(LOOP_DURATION),
+        "-map", "0:v",
+        "-map", "1:a",
+        "-c:v", "copy",
+        "-c:a", "aac", "-b:a", "128k",
+        output_path,
+    ])
+    logger.info(f"Silent audio applied: {output_path}")
 
 def create_short(main_video_path, output_path, duration=SHORT_DURATION):
     """Cut first `duration` seconds and crop to 9:16 for YouTube Shorts."""
@@ -288,8 +300,8 @@ def create_short(main_video_path, output_path, duration=SHORT_DURATION):
 
 def produce(topic):
     """
-    Download a long clip (>=2 min), normalize, loop to 1h,
-    mix in ambient music, cut a 59s Short.
+    Download a long clip (>=2 min), normalize, loop to 30min,
+    replace audio with ambient music only (no natural sounds), cut a 59s Short.
     Returns (main_video_path, short_path, metadata_dict).
     """
     ensure_dir(WORK_DIR)
@@ -326,12 +338,12 @@ def produce(topic):
     normalize_clip(raw_clip, norm_clip)
     os.remove(raw_clip)
 
-    # 4. Create 1-hour loop
+    # 4. Create 30-min loop
     loop_path = os.path.join(WORK_DIR, f"{slug}_loop_{today}.mp4")
     create_loop_video(norm_clip, loop_path, LOOP_DURATION)
     os.remove(norm_clip)
 
-    # 5. Download background music and mix in
+    # 5. Replace audio with background music only (no natural sounds)
     main_path  = os.path.join(WORK_DIR, f"{slug}_main_{today}.mp4")
     music_path = os.path.join(WORK_DIR, f"{slug}_music_{today}.mp3")
     music_added = False
@@ -342,18 +354,19 @@ def produce(topic):
         for mt in music_tracks[:3]:
             logger.info(f"Trying music track {mt['id']} ({mt['duration']}s) ...")
             if download_file(mt["url"], music_path, "music track"):
-                if mix_music(loop_path, music_path, main_path):
+                if apply_music_only(loop_path, music_path, main_path):
                     music_added = True
                     break
         if os.path.exists(music_path):
             os.remove(music_path)
 
     if not music_added:
-        logger.info("No music mixed — keeping natural audio.")
-        os.rename(loop_path, main_path)
-    else:
-        if os.path.exists(loop_path):
-            os.remove(loop_path)
+        # No music found — strip natural audio and add silence (never keep original audio)
+        logger.warning("No music found — adding silent audio track.")
+        add_silent_audio(loop_path, main_path)
+
+    if os.path.exists(loop_path):
+        os.remove(loop_path)
 
     # 6. Create Short from final video (includes music)
     short_path = os.path.join(WORK_DIR, f"{slug}_short_{today}.mp4")
