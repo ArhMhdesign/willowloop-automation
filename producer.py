@@ -2,7 +2,7 @@
 WillowLoop producer.py
 Downloads a nature video clip from Pixabay/Pexels (min 2 min),
 loops it to 30 minutes via FFmpeg concat+copy,
-adds beautiful ambient background music from Pixabay (music only — no natural audio),
+adds beautiful ambient background music from Pixabay (music only -- no natural audio),
 and cuts a 59-second Short (also with music only).
 """
 import os
@@ -20,10 +20,10 @@ PEXELS_KEY  = os.environ.get("PEXELS_KEY", "")
 WORK_DIR    = "/tmp/willowloop"
 
 LOOP_DURATION    = 1800   # 30 minutes
-MIN_CLIP_SECONDS = 120    # require clips >= 2 min so loops aren't boring
+MIN_CLIP_SECONDS = 120    # require clips >= 2 min so loops are not boring
 SHORT_DURATION   = 59     # YouTube Shorts limit
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
+# --- Helpers ------------------------------------------------------------------
 
 def ensure_dir(path):
     os.makedirs(path, exist_ok=True)
@@ -55,8 +55,7 @@ def download_file(url, dest, label="file"):
         if os.path.exists(dest):
             os.remove(dest)
         return False
-
-# ─── Video search ─────────────────────────────────────────────────────────────
+# --- Video search --------------------------------------------------------------
 
 def search_pixabay_video(queries, min_duration=MIN_CLIP_SECONDS, min_width=1280):
     results = []
@@ -131,55 +130,30 @@ def search_pexels_video(queries, min_duration=MIN_CLIP_SECONDS):
     results.sort(key=lambda x: x["duration"], reverse=True)
     return results
 
-# ─── Music search ─────────────────────────────────────────────────────────────
+# --- Music download (direct CDN URLs -- same mechanism as RoarRhythm) ---------
 
-def search_pixabay_music(queries, min_duration=60):
-    """Search Pixabay audio API for ambient music tracks."""
-    results = []
-    seen = set()
-    for query in queries:
-        try:
-            r = requests.get(
-                "https://pixabay.com/api/",
-                params={
-                    "key": PIXABAY_KEY,
-                    "q": query,
-                    "media_type": "music",
-                    "per_page": 10,
-                },
-                timeout=30,
-            )
+def download_music(url, dest):
+    """Download music track from a direct Pixabay CDN URL. No API needed."""
+    try:
+        logger.info(f"Downloading music: ...{url[-35:]} ...")
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        with requests.get(url, stream=True, timeout=120, headers=headers) as r:
             r.raise_for_status()
-            data = r.json()
-            logger.info(f"Music search '{query}': {data.get('totalHits', 0)} results")
-            for hit in data.get("hits", []):
-                hit_id = hit.get("id")
-                if hit_id in seen:
-                    continue
-                dur = hit.get("duration", 0)
-                if dur < min_duration:
-                    continue
-                # Pixabay music API: audio URL in various fields
-                audio_url = (
-                    hit.get("audio", {}).get("url") if isinstance(hit.get("audio"), dict)
-                    else hit.get("audio")
-                    or hit.get("audioURL")
-                    or hit.get("audio_url")
-                )
-                if not audio_url:
-                    continue
-                # Only accept direct audio file URLs
-                if not any(audio_url.lower().endswith(ext) for ext in (".mp3", ".ogg", ".wav", ".m4a", ".flac")):
-                    continue
-                results.append({"url": audio_url, "duration": dur, "id": hit_id})
-                seen.add(hit_id)
-        except Exception as e:
-            logger.warning(f"Pixabay music search '{query}': {e}")
-    results.sort(key=lambda x: x["duration"], reverse=True)
-    logger.info(f"Music tracks found: {len(results)}")
-    return results
+            with open(dest, "wb") as f:
+                for chunk in r.iter_content(chunk_size=65536):
+                    if chunk:
+                        f.write(chunk)
+        dur = get_duration(dest)
+        if dur < 10:
+            logger.warning(f"Music too short ({dur:.0f}s) -- skipping.")
+            return False
+        logger.info(f"Music downloaded OK: {dur:.0f}s")
+        return True
+    except Exception as e:
+        logger.warning(f"Music download failed ({url[-30:]}): {e}")
+        return False
 
-# ─── FFmpeg helpers ───────────────────────────────────────────────────────────
+# --- FFmpeg helpers ------------------------------------------------------------
 
 def _run_ffmpeg(cmd):
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -230,11 +204,10 @@ def create_loop_video(clip_path, output_path, duration=LOOP_DURATION):
         if os.path.exists(concat_file):
             os.remove(concat_file)
     logger.info(f"Loop video ready: {output_path}")
-
 def apply_music_only(video_path, music_path, output_path, music_vol=1.0):
     """
     Replace ALL audio with looping background music.
-    Original video audio is completely discarded — music only.
+    Original video audio is completely discarded -- music only.
     """
     logger.info("Adding music-only audio track ...")
     try:
@@ -273,7 +246,7 @@ def add_silent_audio(video_path, output_path):
     logger.info(f"Silent audio applied: {output_path}")
 
 def create_short(main_video_path, output_path, duration=SHORT_DURATION):
-    """Cut first `duration` seconds and crop to 9:16 for YouTube Shorts."""
+    """Cut first duration seconds and crop to 9:16 for YouTube Shorts."""
     logger.info(f"Creating {duration}s Short ...")
     try:
         _run_ffmpeg([
@@ -296,7 +269,7 @@ def create_short(main_video_path, output_path, duration=SHORT_DURATION):
         ])
     logger.info(f"Short ready: {output_path}")
 
-# ─── Main produce function ────────────────────────────────────────────────────
+# --- Main produce function -----------------------------------------------------
 
 def produce(topic):
     """
@@ -348,21 +321,33 @@ def produce(topic):
     music_path = os.path.join(WORK_DIR, f"{slug}_music_{today}.mp3")
     music_added = False
 
-    music_queries = topic.get("music_queries", [f"{topic['name']} ambient relaxing"])
-    music_tracks  = search_pixabay_music(music_queries)
-    if music_tracks:
-        for mt in music_tracks[:3]:
-            logger.info(f"Trying music track {mt['id']} ({mt['duration']}s) ...")
-            if download_file(mt["url"], music_path, "music track"):
-                if apply_music_only(loop_path, music_path, main_path):
-                    music_added = True
-                    break
+    # Use direct CDN URLs -- same mechanism as RoarRhythm (Pixabay API has no music support)
+    from topics import MUSIC_FALLBACK_URLS
+    primary_url = topic.get("music_url")
+    music_urls  = ([primary_url] if primary_url else []) + MUSIC_FALLBACK_URLS
+
+    for music_url in music_urls:
+        if download_music(music_url, music_path):
+            if apply_music_only(loop_path, music_path, main_path):
+                music_added = True
+                break
+        # Clean up failed partial download
         if os.path.exists(music_path):
+            try:
+                os.remove(music_path)
+            except OSError:
+                pass
+
+    # Clean up music file if still around
+    if os.path.exists(music_path):
+        try:
             os.remove(music_path)
+        except OSError:
+            pass
 
     if not music_added:
-        # No music found — strip natural audio and add silence (never keep original audio)
-        logger.warning("No music found — adding silent audio track.")
+        # All CDN URLs failed -- strip natural audio and add silence
+        logger.warning("All music URLs failed -- adding silent audio track.")
         add_silent_audio(loop_path, main_path)
 
     if os.path.exists(loop_path):
