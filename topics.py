@@ -7,6 +7,140 @@ TOPICS = [
         "id": 0,
         "name": "Cozy Fireplace",
         "slug": "fireplace",
+        "emoji": "\U0001f525",
+        "video_queries": ["fireplace burning fire", "fireplace crackling logs", "cozy fireplace"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/03/28/audio_4acb1675b5.mp3",
+        "music_queries": ["relaxing piano ambient", "cozy instrumental music", "soft jazz piano"],
+        "duration": 1800,
+        "title": "\U0001f525 Cozy Fireplace \u2013 30 Minutes of Crackling Fire | Relaxing Ambience for Sleep & Study",
+        "short_title": "\U0001f525 Crackling Fireplace \u2013 Pure Relaxation #shorts #fireplace",
+        "description": (
+            "\U0001f525 Let the warmth of a cozy fireplace fill your space.\n\n"
+            "30 minutes of uninterrupted crackling fire with soothing background music \u2014 "
+            "perfect for sleep, study, meditation, or relaxing after a long day.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#fireplace #fireplaceambience #relaxingsounds #sleepsounds #cozysounds"
+        ),
+        "short_description": "\U0001f525 Cozy fireplace bliss. Subscribe for daily ambience! \U0001f33f #fireplace #relaxing",
+        "tags": [
+            "fireplace", "fireplace sounds", "crackling fire", "fire sounds", "cozy fire",
+            "sleep sounds", "relaxing sounds", "ambient sounds", "study sounds", "white noise",
+            "fireplace ambience", "cozy ambience", "ASMR fire", "relaxing fire", "nature sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 1,
+        "name": "Rain Forest",
+        "slug": "rain_forest",
+        "emoji": "\U0001f327\ufe0f",
+        "video_queries": ["rain forest tropical", "jungle rain", "rainforest rainfall"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/05/05/audio_bedae80d67.mp3",
+        "music_queries": ["rain ambient music relaxing", "forest meditation piano", "peaceful rain instrumental"],
+        "duration": 1800,
+        "title": "\U0001f327\ufe0f Rain in the Forest \u2013 30 Minutes of Soothing Rainfall | Sleep & Relaxation",
+        "short_title": "\U0001f327\ufe0f Rain Forest Sounds \u2013 Pure Relaxation #shorts #rainsounds",
+        "description": (
+            "\U0001f327\ufe0f Escape to a lush rainforest with gentle rainfall.\n\n"
+            "30 minutes of soothing forest rain sounds with soft ambient music \u2014 "
+            "perfect for deep sleep, stress relief, focus, or meditation.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#rainsounds #forestrain #relaxingsounds #sleepsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f327\ufe0f Rainforest sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "rain sounds", "forest rain", "rainforest", "rain for sleeping", "rain ambience",
+            "sleep sounds", "relaxing rain", "nature sounds", "rainfall sounds", "rainy day",
+            "study sounds", "white noise rain", "ASMR rain", "tropical rain", "jungle sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 2,
+        "name": "Ocean Waves",
+        "slug": "ocean_waves",
+        "emoji": "\U0001f30a",
+        "video_queries": ["ocean waves beach", "sea waves calm", "gentle ocean waves"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/06/09/audio_4968a13b9d.mp3",
+        "music_queries": ["ocean ambient piano music", "sea meditation music", "relaxing beach instrumental"],
+        "duration": 1800,
+        "title": "\U0001f30a Ocean Waves \u2013 30 Minutes of Calming Sea Sounds | Sleep & Meditation",
+        "short_title": "\U0001f30a Calming Ocean Waves \u2013 Pure Relaxation #shorts #oceansounds",
+        "description": (
+            "\U0001f30a Let the rhythm of the ocean calm your mind.\n\n"
+            "30 minutes of gentle ocean waves with peaceful ambient music \u2014 "
+            "perfect for sleep, meditation, yoga, or unwinding after a stressful day.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#oceansounds #wavessounds #beachsounds #relaxingsounds #sleepsounds"
+        ),
+        "short_description": "\U0001f30a Calming ocean waves. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "ocean sounds", "wave sounds", "beach sounds", "ocean waves", "sea sounds",
+            "sleep sounds", "relaxing sounds", "nature sounds", "ocean ambience", "meditation",
+            "waves for sleep", "ASMR ocean", "calming waves", "beach ambience", "water sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 3,
+        "name": "Waterfall",
+        "slug": "waterfall",
+        "emoji": "\U0001f4a7",
+        "video_queries": ["waterfall nature", "waterfall river forest", "forest waterfall flowing"],
+        "music_url": "https://cdn.pixabay.com/audio/2023/01/29/audio_580d2c877d.mp3",
+        "music_queries": ["waterfall ambient music", "nature meditation instrumental", "peaceful water piano"],
+        "duration": 1800,
+        "title": "\U0001f4a7 Waterfall Sounds \u2013 30 Minutes of Flowing Water | Focus & Deep Sleep",
+        "short_title": "\U0001f4a7 Beautiful Waterfall \u2013 Pure Relaxation #shorts #watersounds",
+        "description": (
+            "\U0001f4a7 Immerse yourself in the peaceful flow of a waterfall.\n\n"
+            "30 minutes of pure waterfall sounds with gentle ambient music \u2014 "
+            "ideal for sleep, focus, ASMR, or stress relief.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#waterfallsounds #watersounds #relaxingsounds #sleepsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f4a7 Beautiful waterfall sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "waterfall sounds", "water sounds", "flowing water", "waterfall ambience", "river sounds",
+            "sleep sounds", "relaxing sounds", "nature sounds", "ASMR water", "meditation sounds",
+            "focus sounds", "white noise water", "calming water", "stream sounds", "nature ambience"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 4,
+        "name": "Thunderstorm",
+        "slug": "thunderstorm",
+        "emoji": "\u26c8\ufe0f",
+        "video_queries": ["thunderstorm rain window", "storm rain thunder", "thunder lightning storm"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/02/10/audio_f3639f946e.mp3",
+        "music_queries": ["storm ambient music", "dramatic orchestral rain", "dark ambient instrumental"],
+        "duration": 1800,
+        "title": "\u26c8\ufe0f Thunderstorm \u2013 30 Minutes of Rain & Thunder | Deep Sleep & Relaxation",
+        "short_title": "\u26c8\ufe0f Thunderstorm Rain & Thunder \u2013 Pure Relaxation #shorts #thunderstorm",
+        "description": (
+            "\u26c8\ufe0f Experience the power and peace of a thunderstorm.\n\n"
+            "30 minutes of rain and thunder with atmospheric ambient music \u2014 "
+            "perfect for deep sleep, stress relief, focus, or cozy indoor moments.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#thunderstorm #thundersounds #rainsounds #sleepsounds #stormsounds"
+        ),
+        "short_description": "\u26c8\ufe0f Thunderstorm sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "thunderstorm sounds", "thunder sounds", "rain and thunder", "storm sounds", "heavy rain",
+            "sleep sounds", "relaxing storm", "nature sounds", "thunder ambience", "ASMR thunder",
+            "storm for sleep", "rainy night", "cozy storm", "thunder rain", "ambient storm"
+        ],
+        "category_id": "22",
+    },# WillowLoop – Nature ambient loop topics
+# Each topic produces one 30-min loop video + one 59s Short per day
+# Topic is selected by: day_of_year % len(TOPICS)
+
+TOPICS = [
+    {
+        "id": 0,
+        "name": "Cozy Fireplace",
+        "slug": "fireplace",
         "emoji": "U0001f525",
         "video_queries": ["fireplace burning fire", "fireplace crackling logs", "cozy fireplace"],
         "music_queries": ["relaxing piano ambient", "cozy instrumental music", "soft jazz piano"],
@@ -403,4 +537,302 @@ TOPICS = [
         ],
         "category_id": "22",
     },
+]
+
+        "id": 5,
+        "name": "Snowy Forest",
+        "slug": "snowy_forest",
+        "emoji": "\u2744\ufe0f",
+        "video_queries": ["snowy forest winter", "snow falling forest", "winter forest snow"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/06/18/audio_f639ce6f4d.mp3",
+        "music_queries": ["winter ambient piano", "peaceful snow music", "soft christmas instrumental"],
+        "duration": 1800,
+        "title": "\u2744\ufe0f Snowy Forest \u2013 30 Minutes of Falling Snow | Peaceful Winter Ambience",
+        "short_title": "\u2744\ufe0f Beautiful Snowy Forest \u2013 Pure Relaxation #shorts #snowsounds",
+        "description": (
+            "\u2744\ufe0f Step into a serene winter wonderland.\n\n"
+            "30 minutes of peaceful snowy forest ambience with soft winter music \u2014 "
+            "ideal for sleep, reading, meditation, or embracing the quiet of winter.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#snowysounds #wintersounds #relaxingsounds #sleepsounds #snowambience"
+        ),
+        "short_description": "\u2744\ufe0f Peaceful snowy forest. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "snow sounds", "winter sounds", "snowy forest", "winter ambience", "falling snow",
+            "sleep sounds", "relaxing sounds", "nature sounds", "winter relaxation", "snow ambience",
+            "cozy winter", "blizzard sounds", "peaceful winter", "ASMR snow", "winter forest"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 6,
+        "name": "Mountain Stream",
+        "slug": "mountain_stream",
+        "emoji": "\U0001f3d4\ufe0f",
+        "video_queries": ["mountain stream flowing", "creek stream nature", "river stream rocks"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/03/28/audio_4903e5bcab.mp3",
+        "music_queries": ["mountain ambient music", "peaceful creek instrumental", "nature flute relaxing"],
+        "duration": 1800,
+        "title": "\U0001f3d4\ufe0f Mountain Stream \u2013 30 Minutes of Flowing Creek Sounds | Relax & Focus",
+        "short_title": "\U0001f3d4\ufe0f Peaceful Mountain Stream \u2013 Pure Relaxation #shorts #streamsounds",
+        "description": (
+            "\U0001f3d4\ufe0f Find peace beside a gentle mountain stream.\n\n"
+            "30 minutes of flowing creek sounds with soothing ambient music \u2014 "
+            "perfect for focus, sleep, yoga, or peaceful mornings.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#streamsounds #mountainstream #watersounds #relaxingsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f3d4\ufe0f Mountain stream sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "mountain stream", "stream sounds", "creek sounds", "babbling brook", "water sounds",
+            "sleep sounds", "relaxing sounds", "nature sounds", "flowing water", "river sounds",
+            "focus sounds", "meditation sounds", "ASMR water", "nature ambience", "peaceful stream"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 7,
+        "name": "Night Forest",
+        "slug": "night_forest",
+        "emoji": "\U0001f319",
+        "video_queries": ["night forest trees", "forest night stars", "moonlit forest"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/06/27/audio_6430e27d08.mp3",
+        "music_queries": ["night ambient music", "moonlight piano relaxing", "peaceful night instrumental"],
+        "duration": 1800,
+        "title": "\U0001f319 Night Forest \u2013 30 Minutes of Crickets & Owl Sounds | Sleep Ambience",
+        "short_title": "\U0001f319 Night Forest Sounds \u2013 Pure Relaxation #shorts #nightsounds",
+        "description": (
+            "\U0001f319 Drift away under the stars of a peaceful night forest.\n\n"
+            "30 minutes of night nature sounds with soft ambient music \u2014 crickets, owls, "
+            "and gentle forest whispers \u2014 perfect for deep sleep or meditation.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#nightsounds #forestnight #crickets #sleepsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f319 Night forest sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "night sounds", "night forest", "cricket sounds", "owl sounds", "forest night",
+            "sleep sounds", "relaxing sounds", "nature sounds", "night ambience", "ASMR nature",
+            "peaceful night", "night birds", "nocturnal sounds", "forest ambience", "sleeping sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 8,
+        "name": "Tropical Beach",
+        "slug": "tropical_beach",
+        "emoji": "\U0001f3d6\ufe0f",
+        "video_queries": ["tropical beach waves", "paradise beach ocean", "beach sunset tropical"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/02/18/audio_53434c9bdd.mp3",
+        "music_queries": ["tropical ambient music", "beach lounge instrumental", "island relaxing music"],
+        "duration": 1800,
+        "title": "\U0001f3d6\ufe0f Tropical Beach \u2013 30 Minutes of Paradise Waves | Relaxation & Sleep",
+        "short_title": "\U0001f3d6\ufe0f Tropical Beach Sounds \u2013 Pure Relaxation #shorts #beachsounds",
+        "description": (
+            "\U0001f3d6\ufe0f Escape to a tropical paradise.\n\n"
+            "30 minutes of crystal-clear beach waves with chill ambient music \u2014 "
+            "perfect for sleep, vacation vibes, stress relief, or daydreaming.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#tropicalbeach #beachsounds #oceansounds #relaxingsounds #sleepsounds"
+        ),
+        "short_description": "\U0001f3d6\ufe0f Tropical beach sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "tropical beach", "beach sounds", "ocean waves", "paradise sounds", "summer beach",
+            "sleep sounds", "relaxing sounds", "nature sounds", "beach ambience", "island sounds",
+            "vacation sounds", "ASMR beach", "peaceful beach", "wave sounds", "seaside sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 9,
+        "name": "Bamboo Forest",
+        "slug": "bamboo_forest",
+        "emoji": "\U0001f38b",
+        "video_queries": ["bamboo forest wind", "bamboo grove peaceful", "bamboo nature green"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/06/19/audio_f144de729b.mp3",
+        "music_queries": ["zen ambient music", "japanese flute relaxing", "bamboo meditation music"],
+        "duration": 1800,
+        "title": "\U0001f38b Bamboo Forest \u2013 30 Minutes of Peaceful Zen Sounds | Meditation & Sleep",
+        "short_title": "\U0001f38b Bamboo Forest Sounds \u2013 Pure Relaxation #shorts #zen",
+        "description": (
+            "\U0001f38b Find your inner peace in a serene bamboo forest.\n\n"
+            "30 minutes of gentle bamboo and wind sounds with calming zen music \u2014 "
+            "perfect for meditation, yoga, sleep, or a moment of zen calm.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#bambooforest #zensounds #meditationsounds #relaxingsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f38b Bamboo forest zen sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "bamboo forest", "zen sounds", "bamboo sounds", "meditation sounds", "peaceful forest",
+            "sleep sounds", "relaxing sounds", "nature sounds", "asian garden", "zen garden",
+            "yoga sounds", "ASMR nature", "bamboo wind", "forest ambience", "calm nature"
+        ],
+        "category_id": "22",
+    },    {
+        "id": 10,
+        "name": "Desert Wind",
+        "slug": "desert_wind",
+        "emoji": "\U0001f3dc\ufe0f",
+        "video_queries": ["desert landscape sunset", "sand dunes desert", "desert nature scenery"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/04/21/audio_076e2f430b.mp3",
+        "music_queries": ["desert ambient music", "middle eastern relaxing instrumental", "ethnic ambient meditation"],
+        "duration": 1800,
+        "title": "\U0001f3dc\ufe0f Desert Wind \u2013 30 Minutes of Peaceful Desert Ambience | Meditation & Sleep",
+        "short_title": "\U0001f3dc\ufe0f Desert Wind Sounds \u2013 Pure Relaxation #shorts #desertsounds",
+        "description": (
+            "\U0001f3dc\ufe0f Lose yourself in the vast silence of the desert.\n\n"
+            "30 minutes of gentle desert wind with beautiful ethnic ambient music \u2014 "
+            "perfect for meditation, focus, or escaping into peaceful solitude.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#desertsounds #desertambience #windsounds #relaxingsounds #meditationsounds"
+        ),
+        "short_description": "\U0001f3dc\ufe0f Desert wind sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "desert sounds", "wind sounds", "desert ambience", "sand sounds", "desert wind",
+            "sleep sounds", "relaxing sounds", "nature sounds", "meditation sounds", "desert night",
+            "ASMR wind", "peaceful desert", "open space sounds", "arid landscape", "calm wind"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 11,
+        "name": "Lakeside Sunrise",
+        "slug": "lakeside_sunrise",
+        "emoji": "\U0001f305",
+        "video_queries": ["lake sunrise morning", "lakeside calm water", "peaceful lake nature"],
+        "music_url": "https://cdn.pixabay.com/audio/2025/11/05/audio_8eea27848e.mp3",
+        "music_queries": ["morning ambient piano", "sunrise instrumental music", "peaceful birdsong music"],
+        "duration": 1800,
+        "title": "\U0001f305 Lakeside Sunrise \u2013 30 Minutes of Morning Nature Sounds | Peaceful Ambience",
+        "short_title": "\U0001f305 Lakeside Sunrise Sounds \u2013 Pure Relaxation #shorts #lakesounds",
+        "description": (
+            "\U0001f305 Welcome the day with the peaceful sounds of a lakeside sunrise.\n\n"
+            "30 minutes of gentle water and birdsong with soft morning music \u2014 "
+            "perfect for morning meditation, focus, or a calm start to your day.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#lakesounds #sunrisesounds #morningsounds #relaxingsounds #birdsounds"
+        ),
+        "short_description": "\U0001f305 Lakeside sunrise sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "lake sounds", "sunrise sounds", "morning sounds", "bird sounds", "water sounds",
+            "relaxing sounds", "nature sounds", "peaceful morning", "lakeside ambience", "birdsong",
+            "meditation morning", "ASMR nature", "lake birds", "calm water", "morning ambience"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 12,
+        "name": "Arctic Snowstorm",
+        "slug": "arctic_snowstorm",
+        "emoji": "\U0001f328\ufe0f",
+        "video_queries": ["blizzard snow storm", "arctic snowstorm", "heavy snowfall winter"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/03/29/audio_72a9ff54fb.mp3",
+        "music_queries": ["blizzard ambient music", "arctic drone ambient", "cold wind instrumental dark"],
+        "duration": 1800,
+        "title": "\U0001f328\ufe0f Arctic Snowstorm \u2013 30 Minutes of Blizzard Sounds | Sleep & Relaxation",
+        "short_title": "\U0001f328\ufe0f Arctic Blizzard Sounds \u2013 Pure Relaxation #shorts #blizzard",
+        "description": (
+            "\U0001f328\ufe0f Experience the raw power of an arctic snowstorm.\n\n"
+            "30 minutes of howling wind and snowstorm sounds with atmospheric music \u2014 "
+            "perfect for deep sleep, cozy indoor moments, or focus work.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#blizzardsounds #snowstorm #wintersounds #sleepsounds #relaxingsounds"
+        ),
+        "short_description": "\U0001f328\ufe0f Arctic blizzard sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "blizzard sounds", "snowstorm sounds", "arctic sounds", "winter storm", "wind sounds",
+            "sleep sounds", "relaxing sounds", "nature sounds", "heavy snow", "winter ambience",
+            "ASMR wind", "cozy winter storm", "storm for sleep", "howling wind", "cold sounds"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 13,
+        "name": "River Rapids",
+        "slug": "river_rapids",
+        "emoji": "\U0001f3de\ufe0f",
+        "video_queries": ["river rapids flowing", "rushing river water", "fast river stream"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/03/31/audio_31e6dddbb2.mp3",
+        "music_queries": ["river ambient music energetic", "flowing water instrumental", "nature energy music"],
+        "duration": 1800,
+        "title": "\U0001f3de\ufe0f River Rapids \u2013 30 Minutes of Rushing Water | Focus & Deep Sleep",
+        "short_title": "\U0001f3de\ufe0f River Rapids Sounds \u2013 Pure Relaxation #shorts #watersounds",
+        "description": (
+            "\U0001f3de\ufe0f Be swept away by the energy of rushing river rapids.\n\n"
+            "30 minutes of powerful flowing water sounds with ambient music \u2014 "
+            "perfect for focus, deep sleep, masking noise, or pure relaxation.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#riverrapids #watersounds #rushingwater #relaxingsounds #whitenoise"
+        ),
+        "short_description": "\U0001f3de\ufe0f River rapids sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "river rapids", "rushing water", "water sounds", "river sounds", "white water",
+            "sleep sounds", "relaxing sounds", "nature sounds", "white noise water", "focus sounds",
+            "ASMR water", "powerful water", "waterfall sounds", "stream sounds", "water ambience"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 14,
+        "name": "Autumn Leaves",
+        "slug": "autumn_leaves",
+        "emoji": "\U0001f342",
+        "video_queries": ["autumn leaves falling forest", "fall foliage nature", "autumn forest path"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/07/06/audio_2ff9ba1a1d.mp3",
+        "music_queries": ["autumn ambient piano", "fall season instrumental", "melancholic relaxing music"],
+        "duration": 1800,
+        "title": "\U0001f342 Autumn Leaves \u2013 30 Minutes of Fall Forest Ambience | Relaxing Nature Sounds",
+        "short_title": "\U0001f342 Autumn Forest Sounds \u2013 Pure Relaxation #shorts #autumnsounds",
+        "description": (
+            "\U0001f342 Stroll through a golden autumn forest.\n\n"
+            "30 minutes of falling leaves and autumn wind with beautiful piano music \u2014 "
+            "perfect for relaxation, sleep, reading, or embracing the beauty of the season.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#autumnsounds #fallambience #leavessounds #relaxingsounds #naturalsounds"
+        ),
+        "short_description": "\U0001f342 Autumn forest sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "autumn sounds", "fall sounds", "leaves sounds", "autumn forest", "fall ambience",
+            "sleep sounds", "relaxing sounds", "nature sounds", "autumn leaves", "seasonal sounds",
+            "ASMR nature", "cozy autumn", "windy leaves", "forest fall", "fall colors"
+        ],
+        "category_id": "22",
+    },
+    {
+        "id": 15,
+        "name": "Jungle Rain",
+        "slug": "jungle_rain",
+        "emoji": "\U0001f334",
+        "video_queries": ["tropical jungle rain", "amazon rainforest rain", "dense jungle waterfall"],
+        "music_url": "https://cdn.pixabay.com/audio/2026/04/24/audio_fdf2509563.mp3",
+        "music_queries": ["jungle ambient music", "tropical rain instrumental", "rainforest meditation music"],
+        "duration": 1800,
+        "title": "\U0001f334 Jungle Rain \u2013 30 Minutes of Tropical Downpour | Deep Sleep & Relaxation",
+        "short_title": "\U0001f334 Jungle Rain Sounds \u2013 Pure Relaxation #shorts #junglesounds",
+        "description": (
+            "\U0001f334 Immerse yourself in the sounds of a tropical jungle downpour.\n\n"
+            "30 minutes of intense tropical rain with exotic ambient music \u2014 "
+            "perfect for deep sleep, stress relief, focus, or escaping to a lush paradise.\n\n"
+            "\U0001f33f Subscribe to WillowLoop for daily nature ambience videos.\n\n"
+            "#junglesounds #tropicalrain #rainsounds #sleepsounds #relaxingsounds"
+        ),
+        "short_description": "\U0001f334 Jungle rain sounds. Subscribe for daily ambience! \U0001f33f",
+        "tags": [
+            "jungle sounds", "tropical rain", "rain sounds", "jungle rain", "amazon sounds",
+            "sleep sounds", "relaxing sounds", "nature sounds", "tropical sounds", "rainforest rain",
+            "ASMR rain", "heavy rain", "jungle ambience", "tropical downpour", "jungle birds rain"
+        ],
+        "category_id": "22",
+    },
+]
+
+# Fallback music URLs -- tried in order when a topic's primary music_url fails.
+# All are direct Pixabay CDN MP3s (no API needed, same mechanism as RoarRhythm).
+MUSIC_FALLBACK_URLS = [
+    "https://cdn.pixabay.com/audio/2024/08/19/audio_53fd9f6bc0.mp3",   # tested, working
+    "https://cdn.pixabay.com/audio/2022/10/30/audio_0c1e3cb9fb.mp3",   # tested, working
+    "https://cdn.pixabay.com/audio/2022/08/02/audio_884fe92c21.mp3",   # tested, working
+    "https://cdn.pixabay.com/audio/2026/06/10/audio_46281ca3ee.mp3",
+    "https://cdn.pixabay.com/audio/2026/07/08/audio_9bdff140b9.mp3",
+    "https://cdn.pixabay.com/audio/2026/06/27/audio_7aff4b16ad.mp3",
+    "https://cdn.pixabay.com/audio/2025/03/10/audio_5e8a58ec04.mp3",
 ]
