@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 
 from topics import TOPICS
 from producer import produce
-from uploader import get_youtube_service, upload_video
+from uploader import get_youtube_service, upload_video, get_channel_stats
 from notifier import send_telegram_report
 
 logging.basicConfig(
@@ -30,22 +30,23 @@ def pick_topic():
 def main():
     start = datetime.now(timezone.utc)
     logger.info("=" * 60)
-    logger.info("🌿 WillowLoop — Daily Run Starting")
+    logger.info("\U0001f33f WillowLoop — Daily Run Starting")
     logger.info(f"   {start.strftime('%Y-%m-%d %H:%M UTC')}")
     logger.info("=" * 60)
 
     result = {
-        "success": False,
-        "topic": None,
-        "main_url": None,
+        "success":   False,
+        "topic":     None,
+        "main_url":  None,
         "short_url": None,
-        "error": None,
+        "error":     None,
     }
+    channel_stats = None
 
     try:
         topic = pick_topic()
         result["topic"] = topic["name"]
-        logger.info(f"Today's topic: {topic['emoji']}  {topic['name']}")
+        logger.info(f"Today's topic: {topic['emoji']} {topic['name']}")
 
         # Produce videos
         main_path, short_path, metadata = produce(topic)
@@ -62,6 +63,11 @@ def main():
         result["short_url"] = f"https://youtu.be/{short_id}"
 
         result["success"] = True
+
+        # Fetch channel stats for the report
+        logger.info("Fetching channel stats ...")
+        channel_stats = get_channel_stats(youtube)
+
         logger.info("✅ All done!")
 
     except Exception as exc:
@@ -72,7 +78,7 @@ def main():
     # Send Telegram report
     elapsed_min = (datetime.now(timezone.utc) - start).seconds // 60
     try:
-        send_telegram_report(result, elapsed_min)
+        send_telegram_report(result, elapsed_min, channel_stats)
     except Exception as e:
         logger.warning(f"Telegram report failed: {e}")
 
