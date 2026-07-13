@@ -32,6 +32,24 @@ def get_youtube_service():
     return build('youtube', 'v3', credentials=creds)
 
 
+def get_channel_stats(youtube):
+    """Fetch channel statistics: subscribers, total views, video count."""
+    try:
+        resp = youtube.channels().list(
+            part="statistics",
+            mine=True
+        ).execute()
+        stats = resp["items"][0]["statistics"]
+        return {
+            "subscribers": int(stats.get("subscriberCount", 0)),
+            "views":       int(stats.get("viewCount", 0)),
+            "videos":      int(stats.get("videoCount", 0)),
+        }
+    except Exception as e:
+        logger.warning(f"Could not fetch channel stats: {e}")
+        return None
+
+
 def upload_video(youtube, file_path, meta, is_short=False):
     """
     Upload a video file to YouTube.
@@ -71,7 +89,7 @@ def upload_video(youtube, file_path, meta, is_short=False):
     )
 
     response = None
-    retries = 0
+    retries  = 0
     while response is None:
         try:
             status, response = request.next_chunk()
@@ -85,11 +103,11 @@ def upload_video(youtube, file_path, meta, is_short=False):
                 if retries > MAX_RETRIES:
                     raise RuntimeError(f"Upload failed after {MAX_RETRIES} retries: {e}")
                 wait = 2 ** retries
-                logger.warning(f"Retriable error {e.resp.status}; retrying in {wait}s …")
+                logger.warning(f"Retriable error {e.resp.status}; retrying in {wait}s ...")
                 time.sleep(wait)
             else:
                 raise
 
     video_id = response["id"]
-    logger.info(f"Upload complete → https://youtu.be/{video_id}")
+    logger.info(f"Upload complete -> https://youtu.be/{video_id}")
     return video_id
