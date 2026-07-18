@@ -66,7 +66,7 @@ def main():
 
         # Fetch channel stats for the report
         logger.info("Fetching channel stats ...")
-        channel_stats = get_channel_stats(youtube)
+        channel_stats = get_channel_stats(youtube, video_id=main_id)
 
         logger.info("✅ All done!")
 
