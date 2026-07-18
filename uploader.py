@@ -32,22 +32,50 @@ def get_youtube_service():
     return build('youtube', 'v3', credentials=creds)
 
 
-def get_channel_stats(youtube):
-    """Fetch channel statistics: subscribers, total views, video count."""
+def get_channel_stats(youtube, video_id=None):
+    """
+    Fetch channel statistics: subscribers, total views, video count.
+    Tries mine=True first; falls back to looking up the channel via
+    a recently-uploaded video_id (works with youtube.upload scope).
+    """
     try:
-        resp = youtube.channels().list(
-            part="statistics",
-            mine=True
-        ).execute()
-        stats = resp["items"][0]["statistics"]
-        return {
-            "subscribers": int(stats.get("subscriberCount", 0)),
-            "views":       int(stats.get("viewCount", 0)),
-            "videos":      int(stats.get("videoCount", 0)),
-        }
+        # Attempt 1: mine=True (requires youtube or youtube.readonly scope)
+        try:
+            resp = youtube.channels().list(
+                part="statistics",
+                mine=True
+            ).execute()
+            stats = resp["items"][0]["statistics"]
+            return {
+                "subscribers": int(stats.get("subscriberCount", 0)),
+                "views":       int(stats.get("viewCount", 0)),
+                "videos":      int(stats.get("videoCount", 0)),
+            }
+        except Exception:
+            pass  # Scope may be too narrow — try fallback
+
+        # Attempt 2: derive channel ID from an uploaded video
+        if video_id:
+            vid_resp = youtube.videos().list(
+                part="snippet",
+                id=video_id
+            ).execute()
+            channel_id = vid_resp["items"][0]["snippet"]["channelId"]
+            ch_resp = youtube.channels().list(
+                part="statistics",
+                id=channel_id
+            ).execute()
+            stats = ch_resp["items"][0]["statistics"]
+            return {
+                "subscribers": int(stats.get("subscriberCount", 0)),
+                "views":       int(stats.get("viewCount", 0)),
+                "videos":      int(stats.get("videoCount", 0)),
+            }
+
     except Exception as e:
         logger.warning(f"Could not fetch channel stats: {e}")
-        return None
+
+    return None
 
 
 def upload_video(youtube, file_path, meta, is_short=False):
