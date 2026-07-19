@@ -165,7 +165,7 @@ def normalize_clip(src, dest):
     logger.info("Normalizing clip for clean looping ...")
     _run_ffmpeg([
         "ffmpeg", "-y", "-i", src,
-        "-vf", "scale='min(1280,iw)':'min(720,ih)':force_original_aspect_ratio=decrease",
+        "-vf", "scale='min(1280,iw)':'min(720,ih)':force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2",
         "-c:v", "libx264", "-preset", "ultrafast", "-crf", "26",
         "-c:a", "aac", "-b:a", "128k",
         "-movflags", "+faststart",
