@@ -96,7 +96,7 @@ def search_pixabay_video(queries, min_duration=MIN_CLIP_SECONDS, min_width=1280)
     results.sort(key=lambda x: x["duration"], reverse=True)
     return results
 
-def search_pexels_video(queries, min_duration=MIN_CLIP_SECONDS):
+def search_pexels_video(queries, min_duration=MIN_CLIP_SECONDS, orientation="landscape"):
     if not PEXELS_KEY:
         return []
     results = []
@@ -107,7 +107,7 @@ def search_pexels_video(queries, min_duration=MIN_CLIP_SECONDS):
             r = requests.get(
                 "https://api.pexels.com/videos/search",
                 headers=headers,
-                params={"query": query, "per_page": 10, "min_duration": min_duration},
+                params={"query": query, "per_page": 15, "min_duration": min_duration, "orientation": orientation},
                 timeout=30,
             )
             r.raise_for_status()
