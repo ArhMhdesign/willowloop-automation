@@ -22,15 +22,26 @@ logger = logging.getLogger(__name__)
 
 
 def pick_topic():
-    """Cycle through topics by day-of-year."""
-    doy = datetime.now(timezone.utc).timetuple().tm_yday
-    return TOPICS[doy % len(TOPICS)]
+    """Cycle through topics sequentially, tracking progress in state.json."""
+    import json, os
+    state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
+    try:
+        with open(state_path) as f:
+            state = json.load(f)
+        idx = state.get("topic_index", 0)
+    except FileNotFoundError:
+        doy = datetime.now(timezone.utc).timetuple().tm_yday
+        idx = doy % len(TOPICS)
+    topic = TOPICS[idx % len(TOPICS)]
+    with open(state_path, "w") as f:
+        json.dump({"topic_index": idx + 1}, f)
+    return topic
 
 
 def main():
     start = datetime.now(timezone.utc)
     logger.info("=" * 60)
-    logger.info("\U0001f33f WillowLoop — Daily Run Starting")
+    logger.info("\U0001f33f WillowLoop â Daily Run Starting")
     logger.info(f"   {start.strftime('%Y-%m-%d %H:%M UTC')}")
     logger.info("=" * 60)
 
@@ -68,7 +79,7 @@ def main():
         logger.info("Fetching channel stats ...")
         channel_stats = get_channel_stats(youtube, video_id=main_id)
 
-        logger.info("✅ All done!")
+        logger.info("â All done!")
 
     except Exception as exc:
         result["error"] = str(exc)
