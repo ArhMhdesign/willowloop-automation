@@ -26,29 +26,29 @@ def send_telegram_report(result: dict, duration_min: int, channel_stats: dict = 
 
     if result["success"]:
         lines = [
-            "\u2705 <b>WillowLoop</b> \u2014 Daily Run Complete",
+            "✅ <b>WillowLoop</b> — Daily Run Complete",
             f"📅 {now}",
             "",
             f"🎯 Topic: {result['topic']}",
             "",
             f"📹 Main Video: {result.get('main_url', 'N/A')}",
-            f"\u25b6\ufe0f Short: {result.get('short_url', 'N/A')}",
+            f"▶️ Short: {result.get('short_url', 'N/A')}",
         ]
         if channel_stats:
             lines += [
                 "",
                 "📊 <b>Channel Stats:</b>",
-                f"👥 Subscribers: {channel_stats.get('subscribers', '\u2013')}",
-                f"👁 Total Views: {channel_stats.get('views', '\u2013')}",
-                f"🎬 Total Videos: {channel_stats.get('videos', '\u2013')}",
+                f"👥 Subscribers: {channel_stats.get('subscribers', '–')}",
+                f"👁 Total Views: {channel_stats.get('views', '–')}",
+                f"🎬 Total Videos: {channel_stats.get('videos', '–')}",
             ]
     else:
         lines = [
-            "\u274c <b>WillowLoop</b> \u2014 Run FAILED",
+            "❌ <b>WillowLoop</b> — Run FAILED",
             f"📅 {now}",
             "",
             f"🎯 Topic: {result.get('topic', 'unknown')}",
-            f"\u23f1 Duration: {duration_min} min",
+            f"⏱ Duration: {duration_min} min",
             f"🐛 Error: <code>{result.get('error', 'unknown')[:300]}</code>",
         ]
 
