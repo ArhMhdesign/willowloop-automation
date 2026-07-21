@@ -22,21 +22,24 @@ logger = logging.getLogger(__name__)
 
 
 def pick_topic():
-    """Cycle through topics sequentially, tracking progress in state.json."""
-    import json, os
-    state_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
+    """Pick next unused topic from shuffled pool. Never repeats until all topics are used."""
+    import json as _json, os as _os, random as _random
+    from topics import TOPICS
+    state_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "state.json")
     try:
-        with open(state_path) as f:
-            state = json.load(f)
-        idx = state.get("topic_index", 0)
+        with open(state_path) as _f:
+            _state = _json.load(_f)
+        _pool = _state.get("pool", [])
     except FileNotFoundError:
-        doy = datetime.now(timezone.utc).timetuple().tm_yday
-        idx = doy % len(TOPICS)
-    topic = TOPICS[idx % len(TOPICS)]
-    with open(state_path, "w") as f:
-        json.dump({"topic_index": idx + 1}, f)
+        _pool = []
+    if not _pool:
+        _pool = list(range(len(TOPICS)))
+        _random.shuffle(_pool)
+    _idx = _pool.pop(0)
+    topic = TOPICS[_idx]
+    with open(state_path, "w") as _f:
+        _json.dump({"pool": _pool}, _f)
     return topic
-
 
 def main():
     start = datetime.now(timezone.utc)
