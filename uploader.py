@@ -32,45 +32,67 @@ def get_youtube_service():
     return build('youtube', 'v3', credentials=creds)
 
 
-def get_channel_stats(youtube, video_id=None):
+def get_channel_stats(youtube, video_id=None, channel_id=None):
     """
     Fetch channel statistics: subscribers, total views, video count.
-    Tries mine=True first; falls back to looking up the channel via
-    a recently-uploaded video_id (works with youtube.upload scope).
+
+    Tries in order:
+    1. channel_id directly (from upload response — instant, no scope issues)
+    2. mine=True (requires youtube or youtube.readonly scope)
+    3. look up channel via video_id (fallback, may fail if video not yet indexed)
     """
     try:
-        # Attempt 1: mine=True (requires youtube or youtube.readonly scope)
+        # Attempt 1: use channel_id extracted from upload response
+        if channel_id:
+            ch_resp = youtube.channels().list(
+                part="statistics",
+                id=channel_id
+            ).execute()
+            if ch_resp.get("items"):
+                stats = ch_resp["items"][0]["statistics"]
+                return {
+                    "subscribers": int(stats.get("subscriberCount", 0)),
+                    "views":       int(stats.get("viewCount", 0)),
+                    "videos":      int(stats.get("videoCount", 0)),
+                }
+
+        # Attempt 2: mine=True (requires youtube or youtube.readonly scope)
         try:
             resp = youtube.channels().list(
                 part="statistics",
                 mine=True
             ).execute()
-            stats = resp["items"][0]["statistics"]
-            return {
-                "subscribers": int(stats.get("subscriberCount", 0)),
-                "views":       int(stats.get("viewCount", 0)),
-                "videos":      int(stats.get("videoCount", 0)),
-            }
+            if resp.get("items"):
+                stats = resp["items"][0]["statistics"]
+                return {
+                    "subscribers": int(stats.get("subscriberCount", 0)),
+                    "views":       int(stats.get("viewCount", 0)),
+                    "videos":      int(stats.get("videoCount", 0)),
+                }
         except Exception:
             pass  # Scope may be too narrow — try fallback
 
-        # Attempt 2: derive channel ID from an uploaded video
+        # Attempt 3: derive channel ID from an uploaded video
         if video_id:
             vid_resp = youtube.videos().list(
                 part="snippet",
                 id=video_id
             ).execute()
-            channel_id = vid_resp["items"][0]["snippet"]["channelId"]
-            ch_resp = youtube.channels().list(
-                part="statistics",
-                id=channel_id
-            ).execute()
-            stats = ch_resp["items"][0]["statistics"]
-            return {
-                "subscribers": int(stats.get("subscriberCount", 0)),
-                "views":       int(stats.get("viewCount", 0)),
-                "videos":      int(stats.get("videoCount", 0)),
-            }
+            if vid_resp.get("items"):
+                channel_id = vid_resp["items"][0]["snippet"]["channelId"]
+                ch_resp = youtube.channels().list(
+                    part="statistics",
+                    id=channel_id
+                ).execute()
+                if ch_resp.get("items"):
+                    stats = ch_resp["items"][0]["statistics"]
+                    return {
+                        "subscribers": int(stats.get("subscriberCount", 0)),
+                        "views":       int(stats.get("viewCount", 0)),
+                        "videos":      int(stats.get("videoCount", 0)),
+                    }
+            else:
+                logger.warning(f"Video {video_id} not yet indexed by YouTube API; stats unavailable")
 
     except Exception as e:
         logger.warning(f"Could not fetch channel stats: {e}")
@@ -82,7 +104,7 @@ def upload_video(youtube, file_path, meta, is_short=False):
     """
     Upload a video file to YouTube.
     meta keys: title, description, tags, category_id, privacy
-    Returns the video ID string.
+    Returns (video_id, channel_id) tuple.
     """
     title = meta["title"]
     if is_short and "#shorts" not in title.lower():
@@ -137,5 +159,6 @@ def upload_video(youtube, file_path, meta, is_short=False):
                 raise
 
     video_id = response["id"]
-    logger.info(f"Upload complete -> https://youtu.be/{video_id}")
-    return video_id
+    channel_id = response.get("snippet", {}).get("channelId")
+    logger.info(f"Upload complete -> https://youtu.be/{video_id} (channel: {channel_id})")
+    return video_id, channel_id
