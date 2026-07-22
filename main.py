@@ -29,7 +29,7 @@ def pick_topic():
     try:
         with open(state_path) as _f:
             _state = _json.load(_f)
-        _pool = _state.get("pool", [])
+        _pool = [i for i in _state.get("pool", []) if i < len(TOPICS)]
     except FileNotFoundError:
         _pool = []
     if not _pool:
