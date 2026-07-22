@@ -69,18 +69,18 @@ def main():
         youtube = get_youtube_service()
 
         logger.info("Uploading main video ...")
-        main_id = upload_video(youtube, main_path, metadata["main"], is_short=False)
+        main_id, channel_id = upload_video(youtube, main_path, metadata["main"], is_short=False)
         result["main_url"] = f"https://youtu.be/{main_id}"
 
         logger.info("Uploading Short ...")
-        short_id = upload_video(youtube, short_path, metadata["short"], is_short=True)
+        short_id, _ = upload_video(youtube, short_path, metadata["short"], is_short=True)
         result["short_url"] = f"https://youtu.be/{short_id}"
 
         result["success"] = True
 
         # Fetch channel stats for the report
         logger.info("Fetching channel stats ...")
-        channel_stats = get_channel_stats(youtube, video_id=main_id)
+        channel_stats = get_channel_stats(youtube, video_id=main_id, channel_id=channel_id)
 
         logger.info("â All done!")
 
